@@ -73,7 +73,7 @@ jobs:
     steps:
       - name: 🏗️ Build Docker Image
         id: build
-        uses: your-org/workflows/.github/workflows/java-ecr-workflow.yml@main
+        uses: https://github.com/wujunlin555/workflows/blob/main/.github/workflows/java-ecr-workflow.yml@main
         with:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
           aws-account-id: ${{ env.AWS_ACCOUNT_ID }}
