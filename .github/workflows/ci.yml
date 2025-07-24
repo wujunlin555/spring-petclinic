@@ -1,112 +1,17 @@
-name: CI/CD Pipeline for PetClinic
+name: Invoke Reusable Workflow
 
 on:
   push:
-    branches: 
+    branches:
       - main
-      - develop
-      - 'feature/*'
-  pull_request:
-    branches: 
-      - main
-      - develop
-
-env:
-  AWS_ACCOUNT_ID: "865258959313"  # 替换为你的 AWS 账号
-  AWS_DEFAULT_REGION: "ap-east-1"
-  JAVA_VERSION: "17"
+     
+permissions:
+  contents: write
 
 jobs:
-  # Job 1: 代码质量检查和测试
-  code-quality:
-    name: 🔍 Code Quality & Tests
-    runs-on: ubuntu-latest
-    outputs:
-      should-deploy: ${{ steps.check-deploy.outputs.should-deploy }}
-    
-    steps:
-      - name: 📥 Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: ☕ Setup Java ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'temurin'
-          cache: maven
-
-      - name: 🧪 Run Tests
-        run: |
-          ./mvnw clean test -B
-
-      - name: 📊 Generate Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: 📋 Test Results
-          path: target/surefire-reports/*.xml
-          reporter: java-junit
-          fail-on-error: false
-
-      - name: 🎯 Check if Should Deploy
-        id: check-deploy
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "should-deploy=true" >> $GITHUB_OUTPUT
-            echo "✅ Main branch - will deploy"
-          else
-            echo "should-deploy=false" >> $GITHUB_OUTPUT
-            echo "ℹ️ Feature branch - skipping deployment"
-          fi
-
-  # Job 2: 构建和推送 Docker 镜像
-  build-and-push:
-    name: 🐳 Build & Push Docker Image
-    needs: code-quality
-    runs-on: ubuntu-latest
-    outputs:
-      image-uri: ${{ steps.build.outputs.image-uri }}
-      image-tag: ${{ steps.build.outputs.image-tag }}
-    
-    steps:
-      - name: 🏗️ Build Docker Image
-        id: build
-        uses: https://github.com/wujunlin555/workflows/blob/main/.github/workflows/java-ecr-workflow.yml@main
-        with:
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-          aws-account-id: ${{ env.AWS_ACCOUNT_ID }}
-          java-version: ${{ env.JAVA_VERSION }}
-          enable-tests: false  # 已在上一个 job 中测试过
-          platforms: "linux/amd64"
-        secrets:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-  # Job 3: 部署通知
-  notify:
-    name: 📬 Build Complete
-    needs: [code-quality, build-and-push]
-    runs-on: ubuntu-latest
-    if: always()
-    
-    steps:
-      - name: 📊 Build Summary
-        run: |
-          echo "## 🏗️ PetClinic Build Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Stage | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Tests | ${{ needs.code-quality.result == 'success' && '✅' || '❌' }} ${{ needs.code-quality.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Build | ${{ needs.build-and-push.result == 'success' && '✅' || '❌' }} ${{ needs.build-and-push.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          if [[ "${{ needs.build-and-push.outputs.image-uri }}" != "" ]]; then
-            echo "**🐳 Docker Image:** \`${{ needs.build-and-push.outputs.image-uri }}\`" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "### 🚀 Quick Start" >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-            echo "docker run -p 8080:8080 ${{ needs.build-and-push.outputs.image-uri }}" >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          fi
+  invoke-reusable-workflow:
+    uses: https://github.com/wujunlin555/workflows/blob/main/.github/workflows/java-ecr-workflow.yml@main
+    with:
+      aws-region: "ap-east-1"
+      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
