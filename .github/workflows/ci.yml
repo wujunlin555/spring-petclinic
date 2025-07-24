@@ -12,9 +12,6 @@ jobs:
   invoke-reusable-workflow:
     uses: wujunlin555/workflows/.github/workflows/java-ecr-workflow.yml@main
     with:
-      aws-region: "ap-east-1"
-      aws-account-id: "865258959313"
-      dockerfile-path: ".github/workflows/Dockerfile"
-    secrets:
+      aws-region: "ap-east-1
       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
