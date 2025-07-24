@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   invoke-reusable-workflow:
-    uses: https://github.com/wujunlin555/workflows/blob/main/.github/workflows/java-ecr-workflow.yml@main
+    uses: https://github.com/wujunlin555/workflows/.github/workflows/java-ecr-workflow.yml@main
     with:
       aws-region: "ap-east-1"
       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
