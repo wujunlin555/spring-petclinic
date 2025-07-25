@@ -13,7 +13,7 @@ jobs:
     uses: wujunlin555/workflows/.github/workflows/java-ecr-workflow.yml@main
     with:
       aws-region: "ap-east-1"
-      dockerfile-path: "Dockerfile"
+      dockerfile-path: ".github/workflows/Dockerfile"
     secrets:  
       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
