@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   invoke-reusable-workflow:
-    uses: wujunlin555/workflows/.github/workflows/java-ecr-workflow.yml@main
+    uses: wujunlin555/workflows/.github/workflows/universal-ecr-workflow.yml@main
     with:
       aws-region: "ap-east-1"
       dockerfile-path: ".github/workflows/Dockerfile"
