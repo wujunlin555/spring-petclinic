@@ -23,7 +23,7 @@ jobs:
     with:
       acr_registry: "registry.cn-beijing.aliyuncs.com"
       acr_namespace: "wujunlin"
-      dockerfile_path: ".github/workflows/Dockerfile"
+      #dockerfile_path: ".github/workflows/Dockerfile"
     secrets:
       acr_username: ${{ secrets.acr_username }}
       acr_password: ${{ secrets.acr_password }}
