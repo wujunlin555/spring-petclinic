@@ -8,12 +8,22 @@ on:
 permissions:
   contents: write
 
+#jobs:
+#  invoke-reusable-workflow:
+#    uses: wujunlin555/workflows/.github/workflows/universal-ecr-workflow.yml@main
+#    with:
+#      aws-region: "ap-east-1"
+#      dockerfile-path: ".github/workflows/Dockerfile"
+#    secrets:  
+#      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 jobs:
-  invoke-reusable-workflow:
-    uses: wujunlin555/workflows/.github/workflows/universal-ecr-workflow.yml@main
+  build_and_deploy:
+    uses: wujunlin555/workflows/.github/workflows/universal-acr-workflow.yml@main
     with:
-      aws-region: "ap-east-1"
-      dockerfile-path: ".github/workflows/Dockerfile"
-    secrets:  
-      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      acr_registry: "registry.cn-beijing.aliyuncs.com"
+      acr_namespace: "wujunlin"
+      dockerfile_path: ".github/workflows/Dockerfile"
+    secrets:
+      acr_username: ${{ secrets.acr_username }}
+      acr_password: ${{ secrets.acr_password }}
